@@ -12,6 +12,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Context context = null;
@@ -21,9 +23,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Spinner spinner = null;
     int value = 0;
     int choice = 0;
-
-    String[] bottles = {"Pepsi Max 0,5l 1,8e", "Pepsi Max 1,5l 2,2e", "Coca-Cola Zero 0,5l 2,0e",
-            "Coca-Cola Zero 1,5l 2,5e", "Fanta Zero 0,5l 1,95e"};
+    ArrayList<String> bottlelist = null;
 
     BottleDispenser bottledispenser = BottleDispenser.getInstance();
 
@@ -38,12 +38,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner = (Spinner) findViewById(R.id.spinner);
 
         spinner.setOnItemSelectedListener(this);
-
-        ArrayAdapter array = new ArrayAdapter(this, android.R.layout.simple_spinner_item, bottles);
-
-        array.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(array);
+        spinner();
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -64,10 +59,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
     }
 
+    public void spinner(){
+
+        bottlelist = new ArrayList<String>(); //luodaan lista pulloille
+
+        bottlelist = bottledispenser.createArraylist();
+
+        //data spinneriin
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, bottlelist);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+    }
+
+
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        //Toast.makeText(getApplicationContext(),bottles[i],Toast.LENGTH_LONG).show();
-        choice = i;
+        choice = i; //mikä ostetaan tai poistetaan
     }
 
     @Override
@@ -77,14 +86,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void addMoney(View v){
         bottledispenser.addMoney(text, value);
+        seekbar.setProgress(0);
     }
 
     public void buyBottle(View v){
-        bottledispenser.buyBottle(text, choice);
+        if(bottlelist.isEmpty()){
+            text.setText("Bottledispenser is empty.");
+        }
+        else{
+            bottledispenser.buyBottle(text, choice);
+            if(bottlelist.size() > 0){ //tyhjällä listalla ei uutta spinneriä
+                spinner();
+            }
+        }
     }
 
     public void returnMoney(View v){
         bottledispenser.returnMoney(text);
+        seekbar.setProgress(0);
     }
 
 

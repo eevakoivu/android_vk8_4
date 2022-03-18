@@ -40,11 +40,16 @@ public class BottleDispenser {
         if(money < list.get(choice).getPrice()){
             text.setText("Add money first!");
         }
-        else if(bottles > 0){
-            bottles -= 1;
+
+        else{ //if(bottles > 0 && money > list.get(choice).getPrice())
             money -= list.get(choice).getPrice();
             text.setText("KACHUNK! " + list.get(choice).getName() + " came out of the dispenser!");
+            remove(choice);
+
         }
+        //if(bottles = 0 && money > list.get(choice).getPrice())
+        //arraylist.isEmpty() bottle tilalle
+        //bottle poistaminen arraylistista
     }
 
     public void returnMoney(TextView text) {
@@ -54,4 +59,15 @@ public class BottleDispenser {
         money = 0;
     }
 
+    public void remove(int choice){
+        list.remove(choice);
+    }
+
+    public ArrayList<String> createArraylist(){ //palautettaan arraylist
+        ArrayList<String> list2 = new ArrayList<String>();
+        for(Bottle i : list){ //käydään Arraylist läpi
+            list2.add(String.format("%s %.1fl %.2fe",i.getName(),i.getSize(),i.getPrice())); //lisätään listaan
+        }
+        return list2;
+    }
 }
